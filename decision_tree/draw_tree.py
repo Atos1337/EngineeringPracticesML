@@ -1,4 +1,4 @@
-from node import DecisionTreeNode
+from decision_tree.node import DecisionTreeNode
 import matplotlib.pyplot as plt
 
 

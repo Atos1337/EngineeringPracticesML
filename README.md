@@ -2,6 +2,5 @@
 
 To make experiment, run in shell:
 ```shell
-cd python
-python3 main.py
+python3 decision_tree/main.py
 ```
