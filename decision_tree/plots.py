@@ -10,8 +10,14 @@ def plot_roc_curve(y_test, p_pred, save_path=None):
     fpr = []
     for w in np.arange(-0.01, 1.02, 0.01):
         y_pred = [(0 if p.get(0, 0) > w else 1) for p in p_pred]
-        tpr.append(sum(1 for yp, yt in zip(y_pred, y_test) if yp == 0 and yt == 0) / positive_samples)
-        fpr.append(sum(1 for yp, yt in zip(y_pred, y_test) if yp == 0 and yt != 0) / (len(y_test) - positive_samples))
+        tpr.append(
+            sum(1 for yp, yt in zip(y_pred, y_test) if yp == 0 and yt == 0)
+            / positive_samples
+        )
+        fpr.append(
+            sum(1 for yp, yt in zip(y_pred, y_test) if yp == 0 and yt != 0)
+            / (len(y_test) - positive_samples)
+        )
     plt.figure(figsize=(7, 7))
     plt.plot(fpr, tpr)
     plt.plot([0, 1], [0, 1], linestyle="--")
@@ -27,20 +33,42 @@ def plot_roc_curve(y_test, p_pred, save_path=None):
 
 
 def rectangle_bounds(bounds):
-    return ((bounds[0][0], bounds[0][0], bounds[0][1], bounds[0][1]),
-            (bounds[1][0], bounds[1][1], bounds[1][1], bounds[1][0]))
+    return (
+        (bounds[0][0], bounds[0][0], bounds[0][1], bounds[0][1]),
+        (bounds[1][0], bounds[1][1], bounds[1][1], bounds[1][0]),
+    )
 
 
 def plot_2d_tree(tree_root, bounds, colors):
     if isinstance(tree_root, DecisionTreeNode):
         if tree_root.split_dim:
-            plot_2d_tree(tree_root.left, [bounds[0], [bounds[1][0], tree_root.split_value]], colors)
-            plot_2d_tree(tree_root.right, [bounds[0], [tree_root.split_value, bounds[1][1]]], colors)
-            plt.plot(bounds[0], (tree_root.split_value, tree_root.split_value), c=(0, 0, 0))
+            plot_2d_tree(
+                tree_root.left,
+                [bounds[0], [bounds[1][0], tree_root.split_value]],
+                colors,
+            )
+            plot_2d_tree(
+                tree_root.right,
+                [bounds[0], [tree_root.split_value, bounds[1][1]]],
+                colors,
+            )
+            plt.plot(
+                bounds[0], (tree_root.split_value, tree_root.split_value), c=(0, 0, 0)
+            )
         else:
-            plot_2d_tree(tree_root.left, [[bounds[0][0], tree_root.split_value], bounds[1]], colors)
-            plot_2d_tree(tree_root.right, [[tree_root.split_value, bounds[0][1]], bounds[1]], colors)
-            plt.plot((tree_root.split_value, tree_root.split_value), bounds[1], c=(0, 0, 0))
+            plot_2d_tree(
+                tree_root.left,
+                [[bounds[0][0], tree_root.split_value], bounds[1]],
+                colors,
+            )
+            plot_2d_tree(
+                tree_root.right,
+                [[tree_root.split_value, bounds[0][1]], bounds[1]],
+                colors,
+            )
+            plt.plot(
+                (tree_root.split_value, tree_root.split_value), bounds[1], c=(0, 0, 0)
+            )
     else:
         x, y = rectangle_bounds(bounds)
         plt.fill(x, y, c=colors[tree_root.y] + [0.2])

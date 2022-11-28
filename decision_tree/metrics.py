@@ -43,6 +43,9 @@ def gain(left_y: np.ndarray, right_y: np.ndarray, criterion: Callable) -> float:
     criterion : Callable
         Критерий разбиения.
     """
-    res = criterion(np.concatenate([left_y, right_y])) * (len(left_y) + len(right_y)) - len(right_y) * criterion(
-        right_y) - len(left_y) * criterion(left_y)
+    res = (
+        criterion(np.concatenate([left_y, right_y])) * (len(left_y) + len(right_y))
+        - len(right_y) * criterion(right_y)
+        - len(left_y) * criterion(left_y)
+    )
     return res

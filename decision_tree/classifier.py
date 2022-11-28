@@ -1,8 +1,8 @@
-from typing import Optional, NoReturn, List, Any, Dict, Union
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
 import numpy as np
 
-from decision_tree.metrics import gini, entropy, gain
+from decision_tree.metrics import entropy, gain, gini
 from decision_tree.node import DecisionTreeLeaf, DecisionTreeNode
 
 
@@ -17,9 +17,12 @@ class DecisionTreeClassifier:
 
     """
 
-    def __init__(self, criterion: str = "gini",
-                 max_depth: Optional[int] = None,
-                 min_samples_leaf: int = 1):
+    def __init__(
+        self,
+        criterion: str = "gini",
+        max_depth: Optional[int] = None,
+        min_samples_leaf: int = 1,
+    ):
         """
         Parameters
         ----------
@@ -93,7 +96,9 @@ class DecisionTreeClassifier:
         proba = self.predict_proba(X)
         return [max(p.keys(), key=lambda k: p[k]) for p in proba]
 
-    def _build(self, X: np.ndarray, y: np.ndarray, depth: int) -> Union['DecisionTreeNode', DecisionTreeLeaf]:
+    def _build(
+        self, X: np.ndarray, y: np.ndarray, depth: int
+    ) -> Union["DecisionTreeNode", DecisionTreeLeaf]:
         if len(np.unique(y)) == 1:
             return DecisionTreeLeaf(y)
 
@@ -123,7 +128,9 @@ class DecisionTreeClassifier:
         left = [i for i, (x, _) in enumerate(zip(X, y)) if x[dim] < threshold]
         right = [i for i, (x, _) in enumerate(zip(X, y)) if x[dim] >= threshold]
 
-        return DecisionTreeNode(dim, threshold,
-                                self._build(X[left], y[left], depth + 1),
-                                self._build(X[right], y[right], depth + 1)
-                                )
+        return DecisionTreeNode(
+            dim,
+            threshold,
+            self._build(X[left], y[left], depth + 1),
+            self._build(X[right], y[right], depth + 1),
+        )
