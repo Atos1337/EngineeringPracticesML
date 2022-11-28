@@ -29,3 +29,6 @@ packages = ["decision_tree"]
 
 [tool.flake8]
 max-line-length = 88
+literal-inline-quotes = 'double'
+literal-multiline-quotes = 'double'
+inline-quotes = 'double'

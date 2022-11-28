@@ -8,8 +8,8 @@ def plot_roc_curve(y_test, p_pred, save_path=None):
     positive_samples = sum(1 for y in y_test if y == 0)
     tpr = []
     fpr = []
-    for w in np.arange(-0.01, 1.02, 0.01):
-        y_pred = [(0 if p.get(0, 0) > w else 1) for p in p_pred]
+    for width in np.arange(-0.01, 1.02, 0.01):
+        y_pred = [(0 if p.get(0, 0) > width else 1) for p in p_pred]
         tpr.append(
             sum(1 for yp, yt in zip(y_pred, y_test) if yp == 0 and yt == 0)
             / positive_samples
@@ -74,15 +74,22 @@ def plot_2d_tree(tree_root, bounds, colors):
         plt.fill(x, y, c=colors[tree_root.y] + [0.2])
 
 
-def plot_2d(tree, X, y, save_path=None):
+def plot_2d(tree, X_data, y_data, save_path=None):
     plt.figure(figsize=(9, 9))
-    colors = dict((c, list(np.random.random(3))) for c in np.unique(y))
-    bounds = list(zip(np.min(X, axis=0), np.max(X, axis=0)))
+    colors = {clazz: list(np.random.random(3)) for clazz in np.unique(y_data)}
+    bounds = list(zip(np.min(X_data, axis=0), np.max(X_data, axis=0)))
     plt.xlim(*bounds[0])
     plt.ylim(*bounds[1])
-    plot_2d_tree(tree.root, list(zip(np.min(X, axis=0), np.max(X, axis=0))), colors)
-    for c in np.unique(y):
-        plt.scatter(X[y == c, 0], X[y == c, 1], c=[colors[c]], label=c)
+    plot_2d_tree(
+        tree.root, list(zip(np.min(X_data, axis=0), np.max(X_data, axis=0))), colors
+    )
+    for clazz in np.unique(y_data):
+        plt.scatter(
+            X_data[y_data == clazz, 0],
+            X_data[y_data == clazz, 1],
+            c=[colors[clazz]],
+            label=clazz,
+        )
     plt.legend()
     plt.tight_layout()
     if save_path is not None:
