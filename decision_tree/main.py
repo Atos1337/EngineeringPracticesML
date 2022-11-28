@@ -2,9 +2,9 @@ import os.path
 
 from sklearn.datasets import make_moons
 
-from classifier import DecisionTreeClassifier
-from draw_tree import draw_tree
-from plots import plot_2d, plot_roc_curve
+from decision_tree.classifier import DecisionTreeClassifier
+from decision_tree.draw_tree import draw_tree
+from decision_tree.plots import plot_2d, plot_roc_curve
 
 
 def main():

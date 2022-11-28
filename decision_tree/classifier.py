@@ -2,8 +2,8 @@ from typing import Optional, NoReturn, List, Any, Dict, Union
 
 import numpy as np
 
-from metrics import gini, entropy, gain
-from node import DecisionTreeLeaf, DecisionTreeNode
+from decision_tree.metrics import gini, entropy, gain
+from decision_tree.node import DecisionTreeLeaf, DecisionTreeNode
 
 
 class DecisionTreeClassifier:

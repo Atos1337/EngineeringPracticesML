@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from node import DecisionTreeNode
+from decision_tree.node import DecisionTreeNode
 
 
 def plot_roc_curve(y_test, p_pred, save_path=None):
