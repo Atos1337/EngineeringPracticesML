@@ -4,30 +4,26 @@ from typing import Callable
 import numpy as np
 
 
-def gini(x: np.ndarray) -> float:
+def gini(x_array: np.ndarray) -> float:
     """
     Считает коэффициент Джини для массива меток x.
     """
-    m = defaultdict(int)
-    for y in x:
-        m[y] += 1
-    m = np.array(list(m.values())) / x.shape[0]
-    res = m.dot(1 - m)
-    # print("Giny=", res)
-    return res
+    mapp = defaultdict(int)
+    for y_point in x_array:
+        mapp[y_point] += 1
+    mapp = np.array(list(mapp.values())) / x_array.shape[0]
+    return mapp.dot(1 - mapp)
 
 
-def entropy(x: np.ndarray) -> float:
+def entropy(x_array: np.ndarray) -> float:
     """
     Считает энтропию для массива меток x.
     """
-    m = defaultdict(int)
-    for y in x:
-        m[y] += 1
-    m = np.array(list(m.values())) / x.shape[0]
-    res = -np.sum(m * np.log2(m))
-    # print("Entropy=", res)
-    return res
+    mapp = defaultdict(int)
+    for y_point in x_array:
+        mapp[y_point] += 1
+    mapp = np.array(list(mapp.values())) / x_array.shape[0]
+    return -np.sum(mapp * np.log2(mapp))
 
 
 def gain(left_y: np.ndarray, right_y: np.ndarray, criterion: Callable) -> float:
@@ -43,6 +39,8 @@ def gain(left_y: np.ndarray, right_y: np.ndarray, criterion: Callable) -> float:
     criterion : Callable
         Критерий разбиения.
     """
-    res = criterion(np.concatenate([left_y, right_y])) * (len(left_y) + len(right_y)) - len(right_y) * criterion(
-        right_y) - len(left_y) * criterion(left_y)
-    return res
+    return (
+        criterion(np.concatenate([left_y, right_y])) * (len(left_y) + len(right_y))
+        - len(right_y) * criterion(right_y)
+        - len(left_y) * criterion(left_y)
+    )

@@ -1,8 +1,8 @@
-from typing import Optional, NoReturn, List, Any, Dict, Union
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
 import numpy as np
 
-from decision_tree.metrics import gini, entropy, gain
+from decision_tree.metrics import entropy, gain, gini
 from decision_tree.node import DecisionTreeLeaf, DecisionTreeNode
 
 
@@ -17,9 +17,12 @@ class DecisionTreeClassifier:
 
     """
 
-    def __init__(self, criterion: str = "gini",
-                 max_depth: Optional[int] = None,
-                 min_samples_leaf: int = 1):
+    def __init__(
+        self,
+        criterion: str = "gini",
+        max_depth: Optional[int] = None,
+        min_samples_leaf: int = 1,
+    ):
         """
         Parameters
         ----------
@@ -37,26 +40,26 @@ class DecisionTreeClassifier:
         self.max_depth = max_depth
         self.min_samples_leaf = min_samples_leaf
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
+    def fit(self, X_data: np.ndarray, y_labels: np.ndarray) -> NoReturn:
         """
         Строит дерево решений по обучающей выборке.
 
         Parameters
         ----------
-        X : np.ndarray
+        X_data : np.ndarray
             Обучающая выборка.
-        y : np.ndarray
+        y_labels : np.ndarray
             Вектор меток классов.
         """
-        self.root = self._build(X, y, 0)
+        self.root = self._build(X_data, y_labels, 0)
 
-    def predict_proba(self, X: np.ndarray) -> List[Dict[Any, float]]:
+    def predict_proba(self, X_data: np.ndarray) -> List[Dict[Any, float]]:
         """
         Предсказывает вероятность классов для элементов из X.
 
         Parameters
         ----------
-        X : np.ndarray
+        X_data : np.ndarray
             Элементы для предсказания.
 
         Return
@@ -66,23 +69,23 @@ class DecisionTreeClassifier:
             {метка класса -> вероятность класса}.
         """
         ans = []
-        for x in X:
+        for x_point in X_data:
             cur = self.root
             while not isinstance(cur, DecisionTreeLeaf):
-                if x[cur.split_dim] < cur.split_value:
+                if x_point[cur.split_dim] < cur.split_value:
                     cur = cur.left
                 else:
                     cur = cur.right
             ans.append(cur.m)
         return ans
 
-    def predict(self, X: np.ndarray) -> list:
+    def predict(self, X_array: np.ndarray) -> list:
         """
         Предсказывает классы для элементов X.
 
         Parameters
         ----------
-        X : np.ndarray
+        X_array : np.ndarray
             Элементы для предсказания.
 
         Return
@@ -90,40 +93,52 @@ class DecisionTreeClassifier:
         list
             Вектор предсказанных меток для элементов X.
         """
-        proba = self.predict_proba(X)
+        proba = self.predict_proba(X_array)
         return [max(p.keys(), key=lambda k: p[k]) for p in proba]
 
-    def _build(self, X: np.ndarray, y: np.ndarray, depth: int) -> Union['DecisionTreeNode', DecisionTreeLeaf]:
-        if len(np.unique(y)) == 1:
-            return DecisionTreeLeaf(y)
+    def _build(
+        self, X_array: np.ndarray, y_labels: np.ndarray, depth: int
+    ) -> Union["DecisionTreeNode", DecisionTreeLeaf]:
+        if len(np.unique(y_labels)) == 1:
+            return DecisionTreeLeaf(y_labels)
 
         if depth == self.max_depth:
-            return DecisionTreeLeaf(y)
+            return DecisionTreeLeaf(y_labels)
 
-        if len(y) < 2 * self.min_samples_leaf:
-            return DecisionTreeLeaf(y)
+        if len(y_labels) < 2 * self.min_samples_leaf:
+            return DecisionTreeLeaf(y_labels)
 
         dim = -1
         threshold = -1
         inf_gain = 0
 
-        for i in range(X.shape[1]):
-            ind = list(range(X.shape[0]))
-            ind.sort(key=lambda k: X[k][i])
-            for j in range(self.min_samples_leaf, X.shape[0] - self.min_samples_leaf):
-                cur_gain = gain(y[ind[:j]], y[ind[j:]], self.criterion)
+        for i in range(X_array.shape[1]):
+            ind = list(range(X_array.shape[0]))
+            ind.sort(key=lambda k: X_array[k][i])
+            for j_point in range(
+                self.min_samples_leaf, X_array.shape[0] - self.min_samples_leaf
+            ):
+                cur_gain = gain(
+                    y_labels[ind[:j_point]], y_labels[ind[j_point:]], self.criterion
+                )
                 if cur_gain > inf_gain:
                     dim = i
-                    threshold = X[ind[j]][i]
+                    threshold = X_array[ind[j_point]][i]
                     inf_gain = cur_gain
 
         if dim == -1:
-            return DecisionTreeLeaf(y)
+            return DecisionTreeLeaf(y_labels)
 
-        left = [i for i, (x, _) in enumerate(zip(X, y)) if x[dim] < threshold]
-        right = [i for i, (x, _) in enumerate(zip(X, y)) if x[dim] >= threshold]
+        left = [
+            i for i, (x, _) in enumerate(zip(X_array, y_labels)) if x[dim] < threshold
+        ]
+        right = [
+            i for i, (x, _) in enumerate(zip(X_array, y_labels)) if x[dim] >= threshold
+        ]
 
-        return DecisionTreeNode(dim, threshold,
-                                self._build(X[left], y[left], depth + 1),
-                                self._build(X[right], y[right], depth + 1)
-                                )
+        return DecisionTreeNode(
+            dim,
+            threshold,
+            self._build(X_array[left], y_labels[left], depth + 1),
+            self._build(X_array[right], y_labels[right], depth + 1),
+        )

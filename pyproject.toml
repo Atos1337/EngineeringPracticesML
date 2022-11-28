@@ -16,7 +16,7 @@ dependencies = [
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = ["pytest", "pip-tools", "jupyter"]
+dev = ["pytest", "pip-tools", "jupyter", "isort", "black", "flake8", "flake8-quotes", "flake8-comprehensions", "flake8-return", "flake8-literal", "flake8-variables-names", "pre-commit"]
 
 [project.urls]
 Homepage = "https://github.com/Atos1337/EngineeringPracticesML"
@@ -26,3 +26,9 @@ decision_experiment = "decision_tree.main:main"
 
 [tool.setuptools]
 packages = ["decision_tree"]
+
+[tool.flake8]
+max-line-length = 88
+literal-inline-quotes = 'double'
+literal-multiline-quotes = 'double'
+inline-quotes = 'double'

@@ -11,12 +11,12 @@ class DecisionTreeLeaf:
         Метка класса, который встречается чаще всего среди элементов листа дерева
     """
 
-    def __init__(self, x):
-        m = defaultdict(int)
-        for y in x:
-            m[y] += 1
-        self.m = {k: v / len(x) for k, v in m.items()}
-        self.y = sorted(list(m.keys()), key=lambda x: -m[x])[0]
+    def __init__(self, x_features):
+        mapp = defaultdict(int)
+        for y_feature in x_features:
+            mapp[y_feature] += 1
+        self.m = {k: v / len(x_features) for k, v in mapp.items()}
+        self.y = sorted(mapp.keys(), key=lambda x: -mapp[x])[0]
 
 
 class DecisionTreeNode:
@@ -34,9 +34,13 @@ class DecisionTreeNode:
         Поддерево, отвечающее за случай x[split_dim] >= split_value.
     """
 
-    def __init__(self, split_dim: int, split_value: float,
-                 left: Union['DecisionTreeNode', DecisionTreeLeaf],
-                 right: Union['DecisionTreeNode', DecisionTreeLeaf]):
+    def __init__(
+        self,
+        split_dim: int,
+        split_value: float,
+        left: Union["DecisionTreeNode", DecisionTreeLeaf],
+        right: Union["DecisionTreeNode", DecisionTreeLeaf],
+    ):
         self.split_dim = split_dim
         self.split_value = split_value
         self.left = left
