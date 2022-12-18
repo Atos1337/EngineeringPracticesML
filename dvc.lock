@@ -1,0 +1,68 @@
+schema: '2.0'
+stages:
+  prepare_data:
+    cmd: python decision_tree/main.py --prepare_data
+    deps:
+    - path: decision_tree/main.py
+      md5: f161cd3ee84530f831be439f7f5310ed
+      size: 2119
+    outs:
+    - path: data/test_x
+      md5: b91ebd14c336139401dba92926ac6d35
+      size: 3352
+    - path: data/test_y
+      md5: 8caf41cc2102a26b5e417fe324892022
+      size: 1750
+    - path: data/train_x
+      md5: 59307358f97ff8873f9e9f5114d2b7ba
+      size: 24153
+    - path: data/train_y
+      md5: 501d2f39e372831f3d8afdf03b7157e4
+      size: 12151
+  fit:
+    cmd: python decision_tree/main.py --fit
+    deps:
+    - path: data/train_x
+      md5: 59307358f97ff8873f9e9f5114d2b7ba
+      size: 24153
+    - path: data/train_y
+      md5: 501d2f39e372831f3d8afdf03b7157e4
+      size: 12151
+    - path: decision_tree/main.py
+      md5: f161cd3ee84530f831be439f7f5310ed
+      size: 2119
+    outs:
+    - path: model/tree
+      md5: 10ab9317779baf697217e183e51d9fe3
+      size: 2359
+  predict:
+    cmd: python decision_tree/main.py --predict
+    deps:
+    - path: data/test_x
+      md5: b91ebd14c336139401dba92926ac6d35
+      size: 3352
+    - path: model/tree
+      md5: 10ab9317779baf697217e183e51d9fe3
+      size: 2359
+    outs:
+    - path: data/pred_y
+      md5: dee5a91845b783224e8100575591279f
+      size: 1429
+  plots:
+    cmd: python decision_tree/main.py --plots
+    deps:
+    - path: data/pred_y
+      md5: dee5a91845b783224e8100575591279f
+      size: 1429
+    - path: data/test_y
+      md5: 8caf41cc2102a26b5e417fe324892022
+      size: 1750
+    - path: data/train_x
+      md5: 59307358f97ff8873f9e9f5114d2b7ba
+      size: 24153
+    - path: data/train_y
+      md5: 501d2f39e372831f3d8afdf03b7157e4
+      size: 12151
+    - path: model/tree
+      md5: 10ab9317779baf697217e183e51d9fe3
+      size: 2359
