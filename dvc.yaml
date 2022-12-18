@@ -1,0 +1,36 @@
+stages:
+  prepare_data:
+    cmd: python decision_tree/main.py --prepare_data
+    deps:
+      - decision_tree/main.py
+    outs:
+      - data/train_x
+      - data/train_y
+      - data/test_x
+      - data/test_y
+
+  fit:
+    cmd: python decision_tree/main.py --fit
+    deps:
+      - decision_tree/main.py
+      - data/train_x
+      - data/train_y
+    outs:
+      - model/tree
+
+  predict:
+    cmd: python decision_tree/main.py --predict
+    deps:
+      - model/tree
+      - data/test_x
+    outs:
+      - data/pred_y
+
+  plots:
+    cmd: python decision_tree/main.py --plots
+    deps:
+      - model/tree
+      - data/train_x
+      - data/train_y
+      - data/test_y
+      - data/pred_y
